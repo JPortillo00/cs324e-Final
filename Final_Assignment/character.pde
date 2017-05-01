@@ -3,7 +3,14 @@ int animationTimerValue = 50;
 Player player;
 float xpos;
 float ypos;
-int speed = 3;
+float vx = .03;
+float vy= .03;
+float ax = 1.1;
+float ay= 1.1;
+float m;
+float sprintSpeed = 3;
+float initialSpd = .5;
+//boolean paused = false; 
 
 
 class Player {
@@ -26,7 +33,7 @@ class Player {
   
   void display(float xpos, float ypos) {
     //frame = (frame+1) % imgCount;
-    image(playerSprite[frame], 630, ypos);
+    image(playerSprite[frame], xpos, ypos);
     if ((millis() - animationTimer) >= animationTimerValue) {
      frame = (frame + 1) % imgCount; 
      animationTimer = millis();
@@ -44,23 +51,41 @@ void playerMove() {
  
   //speed = 10 ; 
   if (holdLeft) { 
-    xpos += speed;
+    if (initialSpd >= 3) {
+      initialSpd = 3;
+      xpos -= initialSpd; 
+    }
+    else {
+      initialSpd += vx;
+      xpos -= initialSpd;      
+    }
+    
     
   } 
   if (holdRight) { 
-    xpos -= speed;
+    if (initialSpd >= 3) {
+      initialSpd = 3;
+      xpos += initialSpd;
+    }
+    
+    else {
+      initialSpd += vx;
+      xpos += initialSpd;
+    }
+    
+    //xpos += initialSpd*speed;
     
   } 
   
   if (holdRight && holdSprint) {
-    speed = 4;
-    xpos -= speed;
+    sprintSpeed+= vx;
+    xpos += sprintSpeed;
     
     
   }
   if (holdLeft && holdSprint) {
-    speed = 4;
-    xpos += speed;
+    sprintSpeed+= vx;
+    xpos -= sprintSpeed;
     
     
   }

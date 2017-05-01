@@ -83,11 +83,7 @@ void draw(){
   //player.display(0, ypos);
   playerMove();
   
-  pushMatrix();
-  translate(xpos, 685);
-  rect(400, 0, 40, 40);
-  popMatrix();
-  player.display(0, ypos);
+  player.display(xpos, ypos);
   
   if (paused){
     Paused();
@@ -168,7 +164,14 @@ void keyReleased() {
     falling = true;
     
   }
-  speed = 3;
+  
+  
+  if (key != ' ' || keyCode != UP) {
+    initialSpd = .5;
+    sprintSpeed = 3;
+    
+    
+  }
   
     //if (ypos > 400) { 
     //  ypos -=20;
