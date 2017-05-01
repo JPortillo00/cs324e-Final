@@ -12,6 +12,11 @@ PImage duckhunt;
 void setup(){
   size(1280, 720);
   //background(255);
+    buttoncolor = color(102);
+  highlight = color(51); 
+  button[0] = new RectButton(640, 300, 85, 30, buttoncolor, highlight, "Resume");
+  button[1] = new RectButton(640, 350, 125, 30, buttoncolor, highlight, "New Game");
+  button[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
   duckhunt = loadImage("duckhunt.png");
 
 
@@ -45,11 +50,8 @@ void update(int x, int y) {
   if (mousePressed && paused) {
     if (button[0].pressed()) {
       paused = false;
-      //shooter.paused = paused;
     } else if (button[1].pressed()) {
       paused = false;
-      //shooter.paused = paused;
-      //gameFinished = true;
     } else if (button[2].pressed()) {
       exit();
     }
@@ -62,9 +64,9 @@ void Paused() {
   textAlign(CENTER, CENTER);
   stroke(255);
   fill(currentcolor);
-  rect(335, 150, 150, 60);
+  rect(640, 200, 150, 60);
   fill(255);
-  text("Paused", 335, 150);
+  text("Paused", 640, 200);
   button[0].display();
   button[1].display();
   button[2].display(); 
@@ -77,6 +79,7 @@ void Paused() {
 void draw(){
   background(5);
   
+  
   //player.display(0, ypos);
   playerMove();
   
@@ -85,6 +88,10 @@ void draw(){
   rect(400, 0, 40, 40);
   popMatrix();
   player.display(0, ypos);
+  
+  if (paused){
+    Paused();
+  }
 
   
   
@@ -143,18 +150,26 @@ void setSignal (boolean setTo) {
   
 }
  
-void keyPressed() { 
+void keyPressed() {
+  if (key == 'p' || key =='P'){
+    paused = !paused;
+    setSignal(false);  
+  }else if (paused == false){
   setSignal(true);
+  }
 }
  
 void keyReleased() { 
+  
   setSignal(false);
-  if (key == ' ' || keyCode == UP) {
+  
+  if ((key == ' ' || keyCode == UP)&& paused == false) {
     
     falling = true;
     
   }
   speed = 3;
+  
     //if (ypos > 400) { 
     //  ypos -=20;
     //} else {

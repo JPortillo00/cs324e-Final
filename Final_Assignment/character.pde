@@ -4,7 +4,6 @@ Player player;
 float xpos;
 float ypos;
 int speed = 3;
-boolean paused = false; 
 
 
 class Player {
