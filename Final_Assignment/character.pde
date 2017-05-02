@@ -176,9 +176,10 @@ class Particles extends Player {
   float m = 1.0;
   float ks = 0.1;
   float kd = 0.1;
+  float lifespan;
   
   Particles(float _vx, float _vy, float _r) {
-    
+    lifespan = 255;
     partx = player.x;
     party = player.y;
     vx = _vx;
@@ -192,9 +193,23 @@ class Particles extends Player {
     vy += _fy;
     party -= vy;
     partx += vx;
+    lifespan -= 1;
+    
   }
   void display() {
-    fill(255);
+    fill(255, lifespan);
     ellipse(partx, party, r, r);
   }
+  boolean dead() {
+    if (lifespan < 0.0) {
+      return true;
+    } else {
+      
+      return false;
+    }
+    
+    
+  }
+  
+  
 }

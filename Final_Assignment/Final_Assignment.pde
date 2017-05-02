@@ -107,6 +107,9 @@ void draw(){
     randFloaty = random(0, .01);
     randFloatx = random(-.01, .01);
     particle.applyForces(randFloatx, randFloaty);
+    if (particle.dead()) {
+        particles.remove(i);
+      }
   }
   
   if (paused){
