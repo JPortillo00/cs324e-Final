@@ -8,7 +8,6 @@ final int PAUSE = 1;
 final int TEST = 3;
 int state = 0;
 
-
 int s;
 int startvalue;
 int counter;
@@ -104,7 +103,6 @@ RectButton [] mbutton = new RectButton[2];
 boolean locked = false;
 color currentcolor, buttoncolor, highlight;
 boolean paused = false;
-boolean main_menu = true;
 
 void p_update() {
   if (locked == false) {
@@ -114,16 +112,17 @@ void p_update() {
   } else {
     locked = false;
   }
-  if (mousePressed && paused) {
+  if (mousePressed && state == 1) {
     if (pbutton[0].pressed()) {
       paused = false;
+      state = 2;
     } else if (pbutton[1].pressed()) {
       paused = true;
-      main_menu = true;
-      clear();
+      state = 0;
     } else if (pbutton[2].pressed()) {
       exit();
     }
+    
   }
 }
 
@@ -150,21 +149,20 @@ void m_update(){
   } else {
     locked = false;
   }
-  if (mousePressed && main_menu) {
+  if (mousePressed && state == 0) {
     if (mbutton[0].pressed()) {
-      main_menu = false;
-      state = 2;
-      //paused = false;
+    paused = false;
+     state = 2;
+     print("ERROR\n");
     } else if (mbutton[1].pressed()) {
       exit();
     }
   }
 }
 
-void menu(){
-    fill(0);
+void menu(){  
+  fill(0);
   rect(0,0,width,height);
-  m_update();
   rectMode(CENTER);
 
   textAlign(CENTER, CENTER);
@@ -177,6 +175,7 @@ void menu(){
   mbutton[1].display();
   rectMode(CORNER);
   textAlign(BASELINE);
+  m_update();
 }
 
 float randFloaty = random(0, .01);
@@ -190,6 +189,7 @@ void draw(){
     break;
   case 1:
     Paused();
+    //debug();
     break;
   case 2:   
     if (flash > 0){
@@ -360,10 +360,11 @@ void draw(){
   if (openDoor == 5) {
     
   }
-   
   break; 
   
 }
+//print(state);
+//print(paused);
 }
 boolean holdLeft = false, holdRight = false, holdSprint = false, holdJump = false;
 int jumpMax = 500;
@@ -390,14 +391,12 @@ void keyPressed() {
     player.y-=player.jumpSpeed;
     player.vy=-1*player.jumpSpeed;
   }
-  if (key == 'p' || key =='P'){
+  if ((key == 'p' || key =='P') && state != 0){
     paused = !paused;
     state = 1;
     setSignal(false);  
-  }else if (paused == false && main_menu == false ){
+  }else if (paused == false){
   setSignal(true);
-  }else if (main_menu == true){
-    setSignal(false);
   }
 }
  
