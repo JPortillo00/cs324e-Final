@@ -1,6 +1,8 @@
 class Door {
   float x, y, w, h;
   int doorNum = 0;
+  float spawnLocx = 0;
+  float spawnLocy = 0;
     Door(float x, float y) {
     this.x=x;
     this.y=y;
