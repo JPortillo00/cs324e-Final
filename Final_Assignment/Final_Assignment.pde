@@ -2,6 +2,13 @@ import java.util.Random;
 Random randint = new Random();
 Player player;
 
+final int MAIN_MENU = 0;
+final int GAME = 2;
+final int PAUSE = 1;
+final int TEST = 3;
+int state = 0;
+
+
 int s;
 int startvalue;
 int counter;
@@ -19,14 +26,18 @@ ArrayList<Door> arraydoors= new ArrayList<Door>();
 int openDoor = 0;
 float respawnLocationx, respawnLocationy;
 float flash = 0;
+float movingValuex;
+boolean moveLimit;
 
 void setup(){
   size(1280, 720);
   buttoncolor = color(102);
   highlight = color(51); 
-  button[0] = new RectButton(640, 300, 85, 30, buttoncolor, highlight, "Resume");
-  button[1] = new RectButton(640, 350, 125, 30, buttoncolor, highlight, "New Game");
-  button[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
+  pbutton[0] = new RectButton(640, 300, 85, 30, buttoncolor, highlight, "Resume");
+  pbutton[1] = new RectButton(640, 350, 125, 30, buttoncolor, highlight, "Main Menu");
+  pbutton[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
+  mbutton[0] = new RectButton(640, 300, 80, 30, buttoncolor, highlight, "Begin");
+  mbutton[1] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
 
   startvalue = second();
   counter = 0;
@@ -42,31 +53,35 @@ void setup(){
   player.moveSpeed=3;
   player.jumpSpeed=8;
   
-  
-  hubArea.add(new Platform(width/2, 750, 80, 600));
-  hubArea.add(new Platform(width/2 - 80, 850, 80, 600));
-  hubArea.add(new Platform(width/2 + 80, 850, 80, 600));
-  hubArea.add(new Platform(width/2 + 160, 950, 80, 600));
-  hubArea.add(new Platform(width/2 - 160, 950, 80, 600));
-  hubArea.add(new Platform(640,720,width,10)); 
+  hubArea.add(new Platform(width/2, 750, 80, 600, false, false));
+  hubArea.add(new Platform(width/2 - 80, 850, 80, 600, false, false));
+  hubArea.add(new Platform(width/2 + 80, 850, 80, 600, false, false));
+  hubArea.add(new Platform(width/2 + 160, 950, 80, 600, false, false));
+  hubArea.add(new Platform(width/2 - 160, 950, 80, 600, false, false));
+  hubArea.add(new Platform(640,720,width,10, false, false)); 
   print(width / 2);
   
-  blocks1.add(new Platform(200, 300, 60, 20));
-  blocks1.add(new Platform(300, 400, 60, 20));
-  blocks1.add(new Platform(400, 500, 60, 20));
-  blocks1.add(new Platform(500, 600, 60, 20));
-  blocks1.add(new Platform(600, 700, 60, 20));
-  blocks1.add(new Platform(700, 600, 60, 20));
-  blocks1.add(new Platform(800, 500, 60, 20));
-  blocks1.add(new Platform(900, 400, 60, 20));
-  blocks1.add(new Platform(1000, 500, 60, 20));
-  blocks1.add(new Platform(1100, 600, 60, 20));
-  blocks1.add(new Platform(1200, 500, 60, 20));
-  blocks1.add(new Platform(100, 200, 60, 20));
+  blocks1.add(new Platform(200, 300, 60, 20, false, false));
+  blocks1.add(new Platform(300, 400, 60, 20, false, false));
+  blocks1.add(new Platform(400, 500, 60, 20, false, false));
+  blocks1.add(new Platform(500, 600, 60, 20, false, false));
+  blocks1.add(new Platform(600, 700, 60, 20, false, false));
+  blocks1.add(new Platform(700, 600, 60, 20, false, false));
+  blocks1.add(new Platform(800, 500, 60, 20, false, false));
+  blocks1.add(new Platform(900, 400, 60, 20, false, false));
+  blocks1.add(new Platform(1000, 500, 60, 20, false, false));
+  blocks1.add(new Platform(1100, 600, 60, 20, false, false));
+  blocks1.add(new Platform(1200, 500, 60, 20, false, false));
+  blocks1.add(new Platform(100, 200, 60, 20, false, false));
   
+  
+  blocks2.add(new Platform(0, 200, width - 100, 20, false, false));
+  blocks2.add(new Platform(1280, 200, width - 100, 20, false, false));
+  blocks2.add(new Platform(width/2, 600, 100, 20, true, false));
+  blocks2.add(new Platform(width/2, 400, 100, 20, true, true));
+  blocks2.add(new Platform(1100, 700, 100, 20, false, false));
 
 
-  
   arraydoors.add(new Door(width/2,420));
   arraydoors.add(new Door(width/2 - 80, 520));
   arraydoors.add(new Door(width/2 + 80, 520));
@@ -84,32 +99,36 @@ void setup(){
 
 }
 
-RectButton [] button = new RectButton[3];
+RectButton [] pbutton = new RectButton[3];
+RectButton [] mbutton = new RectButton[2];
 boolean locked = false;
 color currentcolor, buttoncolor, highlight;
 boolean paused = false;
+boolean main_menu = true;
 
-void update(int x, int y) {
+void p_update() {
   if (locked == false) {
-    button[0].update();
-    button[1].update();
-    button[2].update();
+    pbutton[0].update();
+    pbutton[1].update();
+    pbutton[2].update();
   } else {
     locked = false;
   }
   if (mousePressed && paused) {
-    if (button[0].pressed()) {
+    if (pbutton[0].pressed()) {
       paused = false;
-    } else if (button[1].pressed()) {
-      paused = false;
-    } else if (button[2].pressed()) {
+    } else if (pbutton[1].pressed()) {
+      paused = true;
+      main_menu = true;
+      clear();
+    } else if (pbutton[2].pressed()) {
       exit();
     }
   }
 }
 
 void Paused() {
-  update(mouseX, mouseY);
+  p_update();
   rectMode(CENTER);
   textAlign(CENTER, CENTER);
   stroke(255);
@@ -117,9 +136,45 @@ void Paused() {
   rect(640, 200, 150, 60);
   fill(255);
   text("Paused", 640, 200);
-  button[0].display();
-  button[1].display();
-  button[2].display(); 
+  pbutton[0].display();
+  pbutton[1].display();
+  pbutton[2].display(); 
+  rectMode(CORNER);
+  textAlign(BASELINE);
+}
+
+void m_update(){
+   if (locked == false) {
+    mbutton[0].update();
+    mbutton[1].update();
+  } else {
+    locked = false;
+  }
+  if (mousePressed && main_menu) {
+    if (mbutton[0].pressed()) {
+      main_menu = false;
+      state = 2;
+      //paused = false;
+    } else if (mbutton[1].pressed()) {
+      exit();
+    }
+  }
+}
+
+void menu(){
+    fill(0);
+  rect(0,0,width,height);
+  m_update();
+  rectMode(CENTER);
+
+  textAlign(CENTER, CENTER);
+  stroke(255);
+  fill(currentcolor);
+  //rect(640, 200, 150, 60);
+  //fill(255);
+  //text("Paused", 640, 200);
+  mbutton[0].display();
+  mbutton[1].display();
   rectMode(CORNER);
   textAlign(BASELINE);
 }
@@ -127,8 +182,17 @@ void Paused() {
 float randFloaty = random(0, .01);
 float randFloatx = random(0, .01);
 
-void draw(){  
-  if (flash > 0){
+void draw(){ 
+  
+  switch(state){
+  case 0:
+    menu();
+    break;
+  case 1:
+    Paused();
+    break;
+  case 2:   
+    if (flash > 0){
     flash -= 1;
   }
   background(flash);
@@ -137,10 +201,12 @@ void draw(){
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 2));
+    
+    
     for (int i=0;i<hubArea.size();i++) { 
       //displays all blocks and checks if they are colliding with the player
       Platform b=hubArea.get(i);
-      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h));
+      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
       for (int j = 0; j < platParticles.size(); j ++) {
         PlatParticles particle = platParticles.get(j);
         particle.display();
@@ -200,7 +266,7 @@ void draw(){
     for (int i=0;i<blocks1.size();i++) { //displays all blocks and checks if they are colliding with the player
     //displays all blocks and checks if they are colliding with the player
       Platform b=blocks1.get(i);
-      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h));
+      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
       for (int j = 0; j < platParticles.size(); j ++) {
         PlatParticles particle = platParticles.get(j);
         particle.display();
@@ -227,15 +293,78 @@ void draw(){
       }
     }
   }
+  
+  //level 2
+  if (openDoor == 2) {
+    player.playerMove();
+    player.display();
+    particles.add(new Particles(0, 0, 2));
     
-  if (paused){
-    Paused();
+    if (player.y >= 710) {
+      player.x = respawnLocationx;
+      player.y = respawnLocationy;
+      flash = 255;
+    }
+    
+    
+    
+    for (int i=0;i<blocks2.size();i++) { //displays all blocks and checks if they are colliding with the player
+    //displays all blocks and checks if they are colliding with the player
+      Platform b=blocks2.get(i);
+      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
+      for (int j = 0; j < platParticles.size(); j ++) {
+        PlatParticles particle = platParticles.get(j);
+        particle.display();
+        
+        randFloaty = random(0, .005);
+        randFloatx = random(-.01, .01);
+        particle.applyForces(randFloatx, randFloaty);
+        if (particle.dead()) {
+          platParticles.remove(j);
+        }
+      }
+      player.collide(b.x, b.y, b.w, b.h);
+      platParticles.get(i).display();
+      
+      if (b.x > b.snapshotx + 200) {
+       b.movementValue = -1;
+        
+      }else if (b.x < b.snapshotx - 200) {
+        b.movementValue = 1;
+      }
+      
+      b.display();
+       
+    }
+    
+    for (int i = 0; i < particles.size(); i ++) {
+      Particles particle = particles.get(i);
+      particle.display();
+      randFloaty = random(0, .01);
+      randFloatx = random(-.01, .01);
+      particle.applyForces(randFloatx, randFloaty);
+      if (particle.dead()) {
+        particles.remove(i);
+      }
+    }
   }
   
+  if (openDoor == 3) {
+    
+  }
   
+  if (openDoor == 4) {
+    
+  }
+  
+  if (openDoor == 5) {
+    
+  }
+   
+  break; 
   
 }
-
+}
 boolean holdLeft = false, holdRight = false, holdSprint = false, holdJump = false;
 int jumpMax = 500;
 boolean falling = false;
@@ -248,12 +377,10 @@ boolean doorbool(){
 }
 /*/
 
-void setSignal (boolean setTo) { 
-
+void setSignal (boolean setTo) {
   if (key == 'q'){
     holdSprint = setTo;  
-  }
-  
+  }  
 }
  
 void keyPressed() {
@@ -265,9 +392,12 @@ void keyPressed() {
   }
   if (key == 'p' || key =='P'){
     paused = !paused;
+    state = 1;
     setSignal(false);  
-  }else if (paused == false){
+  }else if (paused == false && main_menu == false ){
   setSignal(true);
+  }else if (main_menu == true){
+    setSignal(false);
   }
 }
  

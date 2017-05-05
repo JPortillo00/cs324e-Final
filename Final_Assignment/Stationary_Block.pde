@@ -1,14 +1,36 @@
 class Platform {
   float x, y, w, h;
-  Platform(float x, float y, float w, float h) {
+  float movingx;
+  float movingy;
+  float movementValue;
+  boolean moving;
+  boolean reversed;
+  float snapshotx;
+  
+  
+  
+  Platform(float x, float y, float w, float h, boolean moving, boolean reversed) {
     this.x=x;
     this.y=y;
     this.w=w;
     this.h=h;
+    this.snapshotx = x;
+    this.reversed = reversed;
+    this.moving = moving;
+    if (this.reversed) {
+      this.movementValue = -1;
+    } else {
+      this.movementValue = 1;
+    }
+    
   }
+
   void display() { //draws the block
     fill(0, 0, 0, 0);
     rect(x, y, w, h);
+    if (this.moving) {
+      this.x += this.movementValue;
+    }
   }
 }
 
@@ -25,8 +47,8 @@ class PlatParticles extends Platform {
   float red, g, b;
   
   
-  PlatParticles(float x, float y, float w, float h) {
-    super(x, y, w, h);
+  PlatParticles(float x, float y, float w, float h, boolean moving, boolean reversed) {
+    super(x, y, w, h, moving, reversed);
     lifespan = 255;
     partx = random(x - w / 2, x + w /2);
     party = y - h / 2;
