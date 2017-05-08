@@ -66,7 +66,7 @@ void setup(){
   pbutton[1] = new RectButton(640, 350, 125, 30, buttoncolor, highlight, "Main Menu");
   pbutton[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
   
-  mbutton[0] = new RectButton(640, 300, 80, 30, buttoncolor, highlight, "Begin");
+  mbutton[0] = new RectButton(640, 350, 80, 30, buttoncolor, highlight, "Begin");
   mbutton[1] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
 
     //audiofile
