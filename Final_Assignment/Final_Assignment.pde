@@ -13,9 +13,9 @@ String [] ports;
 final int MAIN_MENU = 0;
 final int GAME = 2;
 final int PAUSE = 1;
-final int TEST = 3;
+final int END = 3;
 int state = 0;
-
+boolean level1,level2,level3,level4,level5 = false;
 int s;
 int startvalue;
 int counter;
@@ -47,7 +47,8 @@ void setup(){
   ports = Serial.list();
   
   try {
-   print(ports[0]);
+   println(ports[0]);
+   println("Arduino Found");
 
   } catch (IndexOutOfBoundsException e) {
     System.err.println("IndexOutOfBoundsException: " + e.getMessage() + "\nArduino not detected\nSetting Arduino to FALSE");    
@@ -178,11 +179,27 @@ void draw(){
   case GAME:
   	Game();
   break;
-  case TEST:
-  
-  break;
+  case END:
+      if(flash<255){
+        flash +=1;
+      }
+      background(flash);
+  break;  
+}
+
+if (flash == 255 && state == END){
+  delay(5000);
+  state = MAIN_MENU;
+  flash = 0;
+  level1 = false;
+  level2 = false;
+  level3 = false;
+  level4 = false;
+  level5 = false;
   
 }
+
+
 //print(state);
 //print(paused);
 }

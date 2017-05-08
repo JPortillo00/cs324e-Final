@@ -18,7 +18,7 @@ void p_update() {
       paused = false;
       state = GAME;
     } else if (pbutton[1].pressed()) {
-      paused = true;
+      paused = false;
       state = MAIN_MENU;
       delay(500);
     } else if (pbutton[2].pressed()) {
@@ -78,7 +78,7 @@ void menu(){
   stroke(255);
   fill(255);
   textSize(60);
-  text("TITLE",width/2,200);
+  text("LIGHT BRINGER?",width/2,200);
   textSize(20);
   text("Use LEFT ARROW and RIGHT ARROW keys to move.",width/2,500);
   text("Use UP ARROW key to move to enter portals.",width/2,525);
@@ -107,7 +107,5 @@ void menu(){
         particles.remove(i);
       }
     }
-  
-  
-  
-}
+  }
+   }   }

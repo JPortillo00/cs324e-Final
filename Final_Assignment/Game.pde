@@ -1,10 +1,29 @@
 void Game(){
-    if (flash > 0){
+  //myPort.clear();
+  if (arduino){
+  if(level1){
+    myPort.write(""+2);
+  }
+  if(level2){
+    myPort.write(""+1);
+  }
+  if(level3){
+    myPort.write(""+3);
+  }
+  if(level4){
+    myPort.write(""+4);
+  }
+  if(level5){
+    myPort.write(""+0);
+  }  
+  }
+  if (flash > 0){
     flash -= 1;
   }
+
   background(flash);
   if (openDoor == 0) {
-    
+    //myPort.write(""+2); // arduino
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 3));
@@ -60,8 +79,11 @@ void Game(){
   }
    
    
-  //level 1
+  //level 1 middle door
   if (openDoor == 1) {
+    //print("door 1");
+    //myPort.write(""+2); // arduino
+
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 3));
@@ -78,6 +100,10 @@ void Game(){
             Door d=arraydoors.get(i);
             if (i == 0) {
               d.cleared = true;
+              level1 = true;
+              if (arduino){
+              myPort.write(""+2);
+              }
             }
           }
         }
@@ -122,12 +148,11 @@ void Game(){
     }
   }
   
-  //level 2
+  //level 2 
+  // second door from left
   if (openDoor == 2) {
-    
-    if (arduino){    
-    myPort.write(""+6);
-  }
+    //print("door2");
+    //myPort.write(""+1); // arduino
 
 
     player.playerMove();
@@ -147,6 +172,10 @@ void Game(){
             Door d=arraydoors.get(i);
             if (i == 1) {
               d.cleared = true;
+              level2 = true;
+              if (arduino){
+              myPort.write(""+1); 
+            }
             }
           }
         }
@@ -202,8 +231,11 @@ void Game(){
   }
   
   //level 3
+  //second door from right
   if (openDoor == 3) {
-    
+    //print("door3");
+    //myPort.write(""+3); // arduino
+
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 3));
@@ -222,6 +254,10 @@ void Game(){
             Door d=arraydoors.get(i);
             if (i == 2) {
               d.cleared = true;
+              level3 = true;
+              if (arduino){
+              myPort.write(""+3); // arduino
+            }
             }
           }
         }
@@ -281,8 +317,10 @@ void Game(){
     
   }
   //level 4
+  // rightmost door
   if (openDoor == 4) {
-    
+    //myPort.write(""+4); // arduino
+
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 3));
@@ -299,6 +337,10 @@ void Game(){
             Door d=arraydoors.get(i);
             if (i == 3) {
               d.cleared = true;
+              level4 = true;
+              if (arduino){
+              myPort.write(""+4); // arduino
+            }
             }
           }
         }
@@ -361,15 +403,19 @@ void Game(){
   }
   
   
-  //level 5
+  //level 5 
+  //left most door
   if (openDoor == 5) {
+    //print("door5");
+    //myPort.write(""+0); // arduino
+
     player.playerMove();
     player.display();
     particles.add(new Particles(0, 0, 3));
     levelDoor5.display();
     if (keyCode == UP && player.x <= levelDoor5.x + levelDoor5.w && player.x >= levelDoor5.x - levelDoor5.w) {
         if (keyCode == UP && player.y <= levelDoor5.y + levelDoor5.h && player.y >= levelDoor5.y - levelDoor5.h) {
-          print ("levelDoor4 found");
+          print ("levelDoor5 found");
           openDoor = levelDoor5.doorNum;
           player.x = 100;
           player.y = 50;
@@ -379,6 +425,10 @@ void Game(){
             Door d=arraydoors.get(i);
             if (i == 4) {
               d.cleared = true;
+              level5 = true;
+              if (arduino){
+              myPort.write(""+0);
+              }
             }
           }
         }
@@ -441,4 +491,10 @@ void Game(){
     
     
   }
+  
+  if (level1 && level2 && level3 && level4 && level5){
+  paused = true;
+  state = END;
+  
+}
 }
