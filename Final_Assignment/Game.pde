@@ -125,7 +125,9 @@ void Game(){
   //level 2
   if (openDoor == 2) {
     
-    //myPort.write(""+6);
+    if (arduino){    
+    myPort.write(""+6);
+  }
 
 
     player.playerMove();

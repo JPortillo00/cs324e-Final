@@ -49,7 +49,7 @@ void setup(){
   try {
    print(ports[0]);
 
-} catch (IndexOutOfBoundsException e) {
+  } catch (IndexOutOfBoundsException e) {
     System.err.println("IndexOutOfBoundsException: " + e.getMessage() + "\nArduino not detected\nSetting Arduino to FALSE");    
     arduino = false;
   }
@@ -65,6 +65,7 @@ void setup(){
   pbutton[0] = new RectButton(640, 300, 85, 30, buttoncolor, highlight, "Resume");
   pbutton[1] = new RectButton(640, 350, 125, 30, buttoncolor, highlight, "Main Menu");
   pbutton[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
+  
   mbutton[0] = new RectButton(640, 300, 80, 30, buttoncolor, highlight, "Begin");
   mbutton[1] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
 
@@ -212,7 +213,11 @@ void keyPressed() {
   }
   if ((key == 'p' || key =='P') && state != 0){
     paused = !paused;
-    state = 1;
+    if (paused){
+    state = PAUSE;
+  }else{
+    state = GAME;
+  }
     setSignal(false);  
   }else if (paused == false){
   setSignal(true);

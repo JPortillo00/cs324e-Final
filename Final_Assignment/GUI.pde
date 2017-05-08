@@ -3,7 +3,7 @@ RectButton [] pbutton = new RectButton[3];
 RectButton [] mbutton = new RectButton[2];
 boolean locked = false;
 color currentcolor, buttoncolor, highlight;
-boolean paused = false;
+boolean paused = true;
 
 void p_update() {
   if (locked == false) {
@@ -13,13 +13,14 @@ void p_update() {
   } else {
     locked = false;
   }
-  if (mousePressed && state == 1) {
+  if (mousePressed && state == PAUSE) {
     if (pbutton[0].pressed()) {
       paused = false;
-      state = 2;
+      state = GAME;
     } else if (pbutton[1].pressed()) {
       paused = true;
-      state = 0;
+      state = MAIN_MENU;
+      delay(500);
     } else if (pbutton[2].pressed()) {
       exit();
     }
@@ -34,11 +35,14 @@ void m_update(){
   } else {
     locked = false;
   }
-  if (mousePressed && state == 0) {
+  if (mousePressed && state == MAIN_MENU) {
+    
     if (mbutton[0].pressed()) {
-    paused = false;
-     state = 2;
-     print("ERROR\n");
+      
+      paused = false;
+      state = GAME;
+      println("ERROR");
+      
     } else if (mbutton[1].pressed()) {
       exit();
     }
@@ -61,7 +65,8 @@ void Paused() {
   textAlign(BASELINE);
 }
 
-void menu(){  
+void menu(){ 
+  m_update();
   fill(0);
   rect(0,0,width,height);
   rectMode(CENTER);
@@ -76,5 +81,5 @@ void menu(){
   mbutton[1].display();
   rectMode(CORNER);
   textAlign(BASELINE);
-  m_update();
+  
 }
