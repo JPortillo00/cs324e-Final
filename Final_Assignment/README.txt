@@ -1,5 +1,9 @@
-Classes/Work to Split up:
+Our project is a puzzle game where your character is a moving particle. In the main screen
+at the beginning of the game, there are 5 doors you can go through and 5 levels. 
+each door take you to another room where the objective is to get to the other portal or door.
+After you complete a level, the door lights up and an LED lights up.  If you beat the game,
+all the LEDs should light up. 
 
-Arduino - one person will work on the LEDs and arduino portion of the assignment. THey will implement processing and the arduino software with the game. 
-Rooms - one person will work on the rooms/levels of the game
-Movement - one person will work on the movement of our character/controls + menu screens
+Controls :
+space to jump
+up,down,left,right to move
