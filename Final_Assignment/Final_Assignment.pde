@@ -72,7 +72,7 @@ void setup(){
     //audiofile
   minim = new Minim(this);
   audio = minim.loadFile("TYMELAPSE - We Became Strangers.. Again.wav");
-  audio.play();
+  audio.loop();
 
   startvalue = second();
   counter = 0;
@@ -203,6 +203,7 @@ void setSignal (boolean setTo) {
     holdSprint = setTo;  
   }  
 }
+
  
 void keyPressed() {
   if (key==CODED && keyCode==LEFT && paused == false) player.vx=-1*player.moveSpeed; //move left
@@ -222,6 +223,18 @@ void keyPressed() {
   }else if (paused == false){
   setSignal(true);
   }
+  
+  if (key == 'm' || key == 'M'){
+    
+    if(audio.isPlaying()){
+      audio.pause();
+    }else{
+      audio.loop();
+      
+    }
+    }
+    
+  
 }
  
 void keyReleased() { 
