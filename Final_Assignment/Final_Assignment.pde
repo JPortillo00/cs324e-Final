@@ -1,6 +1,14 @@
 import java.util.Random;
 Random randint = new Random();
 Player player;
+import ddf.minim.*;
+Minim minim;
+AudioPlayer audio;
+
+import processing.serial.*;
+Serial myPort;
+
+String [] ports;
 
 final int MAIN_MENU = 0;
 final int GAME = 2;
@@ -22,14 +30,36 @@ ArrayList<Platform> blocks5 = new ArrayList<Platform>();
 ArrayList<Particles> particles = new ArrayList<Particles>();
 //ArrayList<StationaryBlock> blocks=new ArrayList<StationaryBlock>();
 ArrayList<Door> arraydoors= new ArrayList<Door>();
+Door levelDoor1;
+Door levelDoor2;
+Door levelDoor3;
+Door levelDoor4;
+Door levelDoor5;
 int openDoor = 0;
 float respawnLocationx, respawnLocationy;
 float flash = 0;
 float movingValuex;
 boolean moveLimit;
+boolean arduino = true;
 
 void setup(){
   size(1280, 720);
+  ports = Serial.list();
+  
+  try {
+   print(ports[0]);
+
+} catch (IndexOutOfBoundsException e) {
+    System.err.println("IndexOutOfBoundsException: " + e.getMessage() + "\nArduino not detected\nSetting Arduino to FALSE");    
+    arduino = false;
+  }
+
+     //arduino code
+  if (arduino){
+    myPort = new Serial(this, ports[0], 9600);
+    myPort.bufferUntil('\n');
+  }
+  
   buttoncolor = color(102);
   highlight = color(51); 
   pbutton[0] = new RectButton(640, 300, 85, 30, buttoncolor, highlight, "Resume");
@@ -37,6 +67,11 @@ void setup(){
   pbutton[2] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
   mbutton[0] = new RectButton(640, 300, 80, 30, buttoncolor, highlight, "Begin");
   mbutton[1] = new RectButton(640, 400, 60, 30, buttoncolor, highlight, "Exit");
+
+    //audiofile
+  minim = new Minim(this);
+  audio = minim.loadFile("TYMELAPSE - We Became Strangers.. Again.wav");
+  audio.play();
 
   startvalue = second();
   counter = 0;
@@ -49,133 +84,81 @@ void setup(){
   player.h = 10;
   player.vy=0;
   rectMode(CENTER);
-  player.moveSpeed=3;
-  player.jumpSpeed=8;
+  player.moveSpeed=1.7;
+  player.jumpSpeed=6.8;
   
-  hubArea.add(new Platform(width/2, 750, 80, 600, false, false));
-  hubArea.add(new Platform(width/2 - 80, 850, 80, 600, false, false));
-  hubArea.add(new Platform(width/2 + 80, 850, 80, 600, false, false));
-  hubArea.add(new Platform(width/2 + 160, 950, 80, 600, false, false));
-  hubArea.add(new Platform(width/2 - 160, 950, 80, 600, false, false));
-  hubArea.add(new Platform(640,720,width,10, false, false)); 
-  print(width / 2);
+   hubArea.add(new Platform(width/2, 750, 80, 600, false, false, false));
+  hubArea.add(new Platform(width/2 - 80, 850, 80, 600, false, false, false));
+  hubArea.add(new Platform(width/2 + 80, 850, 80, 600, false, false, false));
+  hubArea.add(new Platform(width/2 + 160, 950, 80, 600, false, false, false));
+  hubArea.add(new Platform(width/2 - 160, 950, 80, 600, false, false, false));
+  hubArea.add(new Platform(640,720,width,10, false, false, false)); 
+  //print(width / 2);
   
-  blocks1.add(new Platform(200, 300, 60, 20, false, false));
-  blocks1.add(new Platform(300, 400, 60, 20, false, false));
-  blocks1.add(new Platform(400, 500, 60, 20, false, false));
-  blocks1.add(new Platform(500, 600, 60, 20, false, false));
-  blocks1.add(new Platform(600, 700, 60, 20, false, false));
-  blocks1.add(new Platform(700, 600, 60, 20, false, false));
-  blocks1.add(new Platform(800, 500, 60, 20, false, false));
-  blocks1.add(new Platform(900, 400, 60, 20, false, false));
-  blocks1.add(new Platform(1000, 500, 60, 20, false, false));
-  blocks1.add(new Platform(1100, 600, 60, 20, false, false));
-  blocks1.add(new Platform(1200, 500, 60, 20, false, false));
-  blocks1.add(new Platform(100, 200, 60, 20, false, false));
+  blocks1.add(new Platform(200, 300, 40, 20, false, false, false));
+  blocks1.add(new Platform(300, 400, 40, 20, false, false, false));
+  blocks1.add(new Platform(400, 500, 40, 20, false, false, false));
+  blocks1.add(new Platform(500, 600, 40, 20, false, false, false));
+  blocks1.add(new Platform(600, 700, 40, 20, false, false, false));
+  blocks1.add(new Platform(700, 600, 40, 20, false, false, false));
+  blocks1.add(new Platform(800, 500, 40, 20, false, false, false));
+  blocks1.add(new Platform(900, 400, 40, 20, false, false, false));
+  blocks1.add(new Platform(1000, 500, 40, 20, false, false, false));
+  blocks1.add(new Platform(1100, 600, 40, 20, false, false, false));
+  blocks1.add(new Platform(1200, 500, 100, 20, false, false, false));
+  blocks1.add(new Platform(100, 200, 100, 20, false, false, false));
   
   
-  blocks2.add(new Platform(0, 200, width - 100, 20, false, false));
-  blocks2.add(new Platform(1280, 200, width - 100, 20, false, false));
-  blocks2.add(new Platform(width/2, 600, 100, 20, true, false));
-  blocks2.add(new Platform(width/2, 400, 100, 20, true, true));
-  blocks2.add(new Platform(1100, 700, 100, 20, false, false));
+  blocks2.add(new Platform(0, 200, width - 100, 20, false, false, false));
+  blocks2.add(new Platform(1280, 200, width - 100, 20, false, false, false));
+  blocks2.add(new Platform(width/2, 600, 100, 20, true, false, false));
+  blocks2.add(new Platform(width/2, 400, 100, 20, true, false, true));
+  blocks2.add(new Platform(1100, 700, 100, 20, false, false, false));
+  
+  blocks3.add(new Platform(100, 200, 300, 20, false, false, false));
+  blocks3.add(new Platform(300, 400, 30, 20, false, false, false));
+  //blocks3.add(new Platform(200, 500, 30, 20, false, false, false));
+  //blocks3.add(new Platform(100, 600, 30, 20, false, false, false));
+  blocks3.add(new Platform(width /2, 600, 100, 20, true, false, true));
+  blocks3.add(new Platform(1100, 700, 100, 20, false, false, false));
+  
+  blocks4.add(new Platform(100, 200, 100, 20, false, false, false));
+  blocks4.add(new Platform(210, 350, 100, 20, false, true, false));
+  blocks4.add(new Platform(410, 350, 100, 20, false, true, true));
+  blocks4.add(new Platform(610, 350, 100, 20, false, true, false));
+  blocks4.add(new Platform(810, 350, 100, 20, false, true, true));
+  blocks4.add(new Platform(1010, 350, 100, 20, false, true, false));
+  blocks4.add(new Platform(1210, 350, 100, 20, false, true, true));
+  //blocks4.add(new Platform(400, 400, 100, 20, true, true, true));
+  //blocks4.add(new Platform(600, 400, 100, 20, true, true, false));
+  
+  blocks5.add(new Platform(100, 650, 100, 20, false, false, false));
+  blocks5.add(new Platform(200, 550, 100, 20, false, false, false));
+  blocks5.add(new Platform(300, 450, 100, 20, false, true, false));
+  blocks5.add(new Platform(520, 500, 150, 20, true, true, true));
+  blocks5.add(new Platform(740, 600, 100, 20, false, false, false));
+  blocks5.add(new Platform(920, 600, 100, 20, true, false, false));
+  blocks5.add(new Platform(1180, 600, 100, 20, true, false, true));
 
 
-  arraydoors.add(new Door(width/2,420));
-  arraydoors.add(new Door(width/2 - 80, 520));
-  arraydoors.add(new Door(width/2 + 80, 520));
-  arraydoors.add(new Door(width/2 + 160,620));
-  arraydoors.add(new Door(width/2 - 160,620));
+  
+  arraydoors.add(new Door(width/2,420, true));
+  arraydoors.add(new Door(width/2 - 80, 520, true));
+  arraydoors.add(new Door(width/2 + 80, 520, true));
+  arraydoors.add(new Door(width/2 + 160,620, true));
+  arraydoors.add(new Door(width/2 - 160,620, true));
   for (int i=0;i<arraydoors.size();i++) {
     Door d=arraydoors.get(i);
     d.doorNum = i + 1;
   }
-    
+  levelDoor1 = new Door(1200, 460, false);
+  levelDoor2 = new Door(1100, 650, false);
+  levelDoor3 = new Door(1100, 650, false);
+  levelDoor4 = new Door(1210, 500, false);
+  levelDoor5 = new Door(1210, 550, false);
   
   rectMode(CENTER);
-  player.moveSpeed=2;
-  player.jumpSpeed= 8;
 
-}
-
-RectButton [] pbutton = new RectButton[3];
-RectButton [] mbutton = new RectButton[2];
-boolean locked = false;
-color currentcolor, buttoncolor, highlight;
-boolean paused = false;
-
-void p_update() {
-  if (locked == false) {
-    pbutton[0].update();
-    pbutton[1].update();
-    pbutton[2].update();
-  } else {
-    locked = false;
-  }
-  if (mousePressed && state == 1) {
-    if (pbutton[0].pressed()) {
-      paused = false;
-      state = 2;
-    } else if (pbutton[1].pressed()) {
-      paused = true;
-      state = 0;
-    } else if (pbutton[2].pressed()) {
-      exit();
-    }
-    
-  }
-}
-
-void Paused() {
-  p_update();
-  rectMode(CENTER);
-  textAlign(CENTER, CENTER);
-  stroke(255);
-  fill(currentcolor);
-  rect(640, 200, 150, 60);
-  fill(255);
-  text("Paused", 640, 200);
-  pbutton[0].display();
-  pbutton[1].display();
-  pbutton[2].display(); 
-  rectMode(CORNER);
-  textAlign(BASELINE);
-}
-
-void m_update(){
-   if (locked == false) {
-    mbutton[0].update();
-    mbutton[1].update();
-  } else {
-    locked = false;
-  }
-  if (mousePressed && state == 0) {
-    if (mbutton[0].pressed()) {
-    paused = false;
-     state = 2;
-     print("ERROR\n");
-    } else if (mbutton[1].pressed()) {
-      exit();
-    }
-  }
-}
-
-void menu(){  
-  fill(0);
-  rect(0,0,width,height);
-  rectMode(CENTER);
-
-  textAlign(CENTER, CENTER);
-  stroke(255);
-  fill(currentcolor);
-  //rect(640, 200, 150, 60);
-  //fill(255);
-  //text("Paused", 640, 200);
-  mbutton[0].display();
-  mbutton[1].display();
-  rectMode(CORNER);
-  textAlign(BASELINE);
-  m_update();
 }
 
 float randFloaty = random(0, .01);
@@ -184,183 +167,19 @@ float randFloatx = random(0, .01);
 void draw(){ 
   
   switch(state){
-  case 0:
+  case MAIN_MENU:
     menu();
     break;
-  case 1:
+  case PAUSE:
     Paused();
     //debug();
     break;
-  case 2:   
-    if (flash > 0){
-    flash -= 1;
-  }
-  background(flash);
-  if (openDoor == 0) {
-    
-    player.playerMove();
-    player.display();
-    particles.add(new Particles(0, 0, 2));
-    
-    
-    for (int i=0;i<hubArea.size();i++) { 
-      //displays all blocks and checks if they are colliding with the player
-      Platform b=hubArea.get(i);
-      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
-      for (int j = 0; j < platParticles.size(); j ++) {
-        PlatParticles particle = platParticles.get(j);
-        particle.display();
-        randFloaty = random(0, .005);
-        randFloatx = random(-.01, .01);
-        particle.applyForces(randFloatx, randFloaty);
-        if (particle.dead()) {
-          platParticles.remove(j);
-        }
-      }
-      player.collide(b.x, b.y, b.w, b.h);
-      platParticles.get(i).display();
-      b.display();
-    }
-    for (int i=0;i<arraydoors.size();i++) { 
-      Door d=arraydoors.get(i);
-      //player.collide(d.x, d.y, d.w, d.h);
-      d.display();
-      if (keyCode == UP && player.x <= d.x + d.w && player.x >= d.x - d.w) {
-        if (keyCode == UP && player.y <= d.y + d.h && player.y >= d.y - d.h) {
-          print ("Door", str(i + 1), "found");
-          openDoor = d.doorNum;
-          player.x = 100;
-          player.y = 50;
-          respawnLocationx = player.x;
-          respawnLocationy = player.y;
-          }
-        }
-      }
-    for (int i = 0; i < particles.size(); i ++) {
-      Particles particle = particles.get(i);
-      particle.display();
-      randFloaty = random(0, .01);
-      randFloatx = random(-.01, .01);
-      particle.applyForces(randFloatx, randFloaty);
-      if (particle.dead()) {
-        particles.remove(i);
-      }
-    }
-  }
-   
-   
-  //level 1
-  if (openDoor == 1) {
-    player.playerMove();
-    player.display();
-    particles.add(new Particles(0, 0, 2));
-    
-    if (player.y >= 710) {
-      player.x = respawnLocationx;
-      player.y = respawnLocationy;
-      flash = 255;
-    }
-    
-    
-    
-    for (int i=0;i<blocks1.size();i++) { //displays all blocks and checks if they are colliding with the player
-    //displays all blocks and checks if they are colliding with the player
-      Platform b=blocks1.get(i);
-      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
-      for (int j = 0; j < platParticles.size(); j ++) {
-        PlatParticles particle = platParticles.get(j);
-        particle.display();
-        randFloaty = random(0, .005);
-        randFloatx = random(-.01, .01);
-        particle.applyForces(randFloatx, randFloaty);
-        if (particle.dead()) {
-          platParticles.remove(j);
-        }
-      }
-      player.collide(b.x, b.y, b.w, b.h);
-      platParticles.get(i).display();
-      b.display();
-    }
-    
-    for (int i = 0; i < particles.size(); i ++) {
-      Particles particle = particles.get(i);
-      particle.display();
-      randFloaty = random(0, .01);
-      randFloatx = random(-.01, .01);
-      particle.applyForces(randFloatx, randFloaty);
-      if (particle.dead()) {
-        particles.remove(i);
-      }
-    }
-  }
+  case GAME:
+  	Game();
+  break;
+  case TEST:
   
-  //level 2
-  if (openDoor == 2) {
-    player.playerMove();
-    player.display();
-    particles.add(new Particles(0, 0, 2));
-    
-    if (player.y >= 710) {
-      player.x = respawnLocationx;
-      player.y = respawnLocationy;
-      flash = 255;
-    }
-    
-    
-    
-    for (int i=0;i<blocks2.size();i++) { //displays all blocks and checks if they are colliding with the player
-    //displays all blocks and checks if they are colliding with the player
-      Platform b=blocks2.get(i);
-      platParticles.add(new PlatParticles(b.x, b.y, b.w, b.h, b.moving, b.reversed));
-      for (int j = 0; j < platParticles.size(); j ++) {
-        PlatParticles particle = platParticles.get(j);
-        particle.display();
-        
-        randFloaty = random(0, .005);
-        randFloatx = random(-.01, .01);
-        particle.applyForces(randFloatx, randFloaty);
-        if (particle.dead()) {
-          platParticles.remove(j);
-        }
-      }
-      player.collide(b.x, b.y, b.w, b.h);
-      platParticles.get(i).display();
-      
-      if (b.x > b.snapshotx + 200) {
-       b.movementValue = -1;
-        
-      }else if (b.x < b.snapshotx - 200) {
-        b.movementValue = 1;
-      }
-      
-      b.display();
-       
-    }
-    
-    for (int i = 0; i < particles.size(); i ++) {
-      Particles particle = particles.get(i);
-      particle.display();
-      randFloaty = random(0, .01);
-      randFloatx = random(-.01, .01);
-      particle.applyForces(randFloatx, randFloaty);
-      if (particle.dead()) {
-        particles.remove(i);
-      }
-    }
-  }
-  
-  if (openDoor == 3) {
-    
-  }
-  
-  if (openDoor == 4) {
-    
-  }
-  
-  if (openDoor == 5) {
-    
-  }
-  break; 
+  break;
   
 }
 //print(state);

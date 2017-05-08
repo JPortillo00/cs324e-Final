@@ -1,31 +1,32 @@
 int animationTimer = 0;
 int animationTimerValue = 50; 
 
-/*float xpos;
-float ypos;
-float vx = .03;
-float vy= .03;*/
-//float sprintSpeed = 3;
-//float initialSpd = .5;
-//boolean paused = false; 
-
 
 class Player {
-  float x, y, w, h, vx, vy;
+  float x, y, w, h, vx, vy, a;
   float moveSpeed;
   float jumpSpeed;
   float pWidth;
   
-
   
-  void playerMove() { //moves the player
+
+  //moves the player
+  void playerMove() {
+    a = 0.015;
+    if (vx == 0) {
+      moveSpeed = 1.7;
+    }
+    moveSpeed += a;
+    if (moveSpeed >= 3) {
+      moveSpeed = 3;
+    }
     x+=vx;
     y+=vy;
     if (y>=height-h/2) {
       y=height-h/2;
       vy=0;  //floor
     } else if (y<height) {
-      vy+=0.32;  //gravity
+      vy+=0.22;  //gravity
     }
   }
 
@@ -64,8 +65,7 @@ class Player {
   int getWidth() {
     return playerSprite[0]. width;
   }*/
-  //Sprite Code
-    void collide(float bx, float by, float bw, float bh) { //takes info of stationary block
+    void collide(float bx, float by, float bw, float bh) { 
     if (collidedWithBlock(bx, by, bw, bh)) {
       float dx=abs(bx-x);
       float dy=abs(by-y);
@@ -91,7 +91,7 @@ class Player {
   }
   
   
-  void collidedoors(float bx, float by, float bw, float bh) { //takes info of stationary block
+  void collidedoors(float bx, float by, float bw, float bh) { 
     if (collidedWithBlock(bx, by, bw, bh)) {
       float dx=abs(bx-x);
       float dy=abs(by-y);
